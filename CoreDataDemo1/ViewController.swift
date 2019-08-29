@@ -38,7 +38,20 @@ class ViewController: UIViewController {
     @IBAction func tappedOnButton(_ sender: UIButton) {
         switch sender {
         case button1:
+            
+            NetworkManager.getHeadLines { (isSuccess, headlinesModel) in
+                if isSuccess {
+                    do {
+                        try self.context.save()
+                    } catch {
+                        print(error)
+                    }
+                }
+            }
+            
+            
             print("btn1 cases")
+            return
             let listOfItemsentityDesc = NSEntityDescription.entity(forEntityName: "ListOfItems", in: context)
             let newItemList = NSManagedObject(entity: listOfItemsentityDesc!, insertInto: context) as! ListOfItems
             let itemDesc = NSEntityDescription.entity(forEntityName: "Item", in: context)
@@ -68,6 +81,21 @@ class ViewController: UIViewController {
                 print(error)
             }
         case button2:
+            
+            do {
+                let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "HeadLinesModel")
+                let result = try context.fetch(fetchRequest).first as! HeadLinesModel
+                print(result)
+                let firstArticle = result.articles?.first(where: { (_) -> Bool in
+                    return true
+                }) as! Articles
+                context.delete(result)
+                print(firstArticle)
+            } catch {
+                print(error)
+            }
+            
+            return
             //Delete one item
             do {
                 let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "ListOfItems")
@@ -92,6 +120,17 @@ class ViewController: UIViewController {
             print("btn2 cases")
         case button3:
             print("btn3 cases")
+            do {
+                let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Articles")
+                let result = try context.fetch(fetchRequest).first as! Articles
+                print(result)
+//                let firstArticle = result.articles?.first(where: { (_) -> Bool in
+//                    return true
+//                }) as! Articles
+               // print(firstArticle)
+            } catch {
+                print(error)
+            }
         default:
             print("Default cases")
         }
